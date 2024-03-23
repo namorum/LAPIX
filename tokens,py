@@ -1,0 +1,21 @@
+from yargy.tokenizer import TokenRule, Tokenizer
+from funcs import regex_between
+
+UNIQUE_RULES = [
+    TokenRule(
+        type="Номер протокола технологической операции",
+        pattern=regex_between("Номер протокола технологической операции: ", "\n")
+    ),
+]
+
+
+RULES_WITH_MEASURE_UNITS = [
+    TokenRule(
+        type="Единица измерения",
+        pattern=regex_between(",", ":", True)
+    ),
+    TokenRule(
+        type="Значение",
+        pattern=regex_between(':', " ", True)
+    )
+]
