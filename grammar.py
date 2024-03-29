@@ -1,4 +1,8 @@
-from yargy import interpretation, parser
+from IPython.display import display
+import IPython
+
+IPython.embed()
+
 from yargy import rule, or_, forward
 from yargy.tokenizer import TokenRule
 from funcs import get_docx_text, regex_between
@@ -10,9 +14,6 @@ def list_to_rules(list):
     for el in list:
         rules.append(rule(el))
     return tuple(rules)
-
-
-# print(f"({regex_between(NAMES, ' *\n| *\t', is_strict=True, str_end=': ')})|({regex_between(UNITS, ' *\n| *\t', is_strict=True, str_end=': ')})")
 
 
 VALUE = TokenRule(
@@ -109,9 +110,7 @@ DOCUMENT.define(
 ).named("DOCUMENT")
 
 
-print(DOCUMENT.normalized.as_bnf)
-
-
-def extract(path):
-    text = get_docx_text(path)
+if __name__ == "__main__":
+    display(DOCUMENT.normalized.as_bnf)
+    
     
