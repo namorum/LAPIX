@@ -1,13 +1,35 @@
-from funcs import get_docx_text
-from parse import parser
+from funcs import get_docx_text, print_tree
+from yargy.tokenizer import Tokenizer
+from yargy import Parser
+from grammar import NAME, UNIT, SECTION_NAME, FEATURE_NAME, WORDS, DATES, DATE, FEATURE, SECTION, DOCUMENT
 
 
 input = get_docx_text('file.docx')
-print(input)
-
-output = parser.findall(input)
-print(output)
+print(input, end="\n\n\n")
 
 
-for match in output:
+tokenizer = Tokenizer()
+
+print([_.value for _ in tokenizer(input)])
+
+print('\n\n\n')
+
+for line in input.splitlines():
+    print([_.value for _ in tokenizer(line)])
+    #print([_.type for _ in tokenizer(line)])
+
+print('\n\n\n')
+
+#for rule in [NAME, UNIT, SECTION_NAME, FEATURE_NAME, WORDS, DATE]:
+
+parser = Parser(FEATURE)
+
+for match in parser.findall(input):
     print([_.value for _ in match.tokens])
+
+print('\n\n\n')
+
+for match in parser.findall(input):
+    print_tree(match.fact)
+    
+print('\n\n\n')

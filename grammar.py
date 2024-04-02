@@ -1,116 +1,172 @@
-from IPython.display import display
-import IPython
-
-IPython.embed()
-
-from yargy import rule, or_, forward
-from yargy.tokenizer import TokenRule
-from funcs import get_docx_text, regex_between
-from terminals import NAMES, UNITS, SECTION_NAMES, FEATURE_NAMES
-
-
-def list_to_rules(list):
-    rules = []
-    for el in list:
-        rules.append(rule(el))
-    return tuple(rules)
+from yargy import rule, or_, and_, forward
+from yargy.tokenizer import TokenRule, Tokenizer
+from yargy.predicates import eq as eq_, type as type_, in_
+from yargy import Parser
+import regex as re
+from funcs import get_docx_text, regex_between, list_to_eq_seq
+from pipeline import NAME, UNIT, SECTION_NAME, FEATURE_NAME
+from facts import DateLeaf, Leaf, Node
 
 
-VALUE = TokenRule(
-    "VALUE",
-    f"({regex_between(NAMES, ' *\n| *\t', is_strict=True, str_end=': ')})|({regex_between(UNITS, ' *\n| *\t', is_strict=True, str_end=': ')})"
+WORD = rule(
+    type_('RU')
 )
 
-FEATURE_VALUE = TokenRule(
-    "FEATURE_VALUE",
-    regex_between(FEATURE_NAMES, " *\n| *\t", is_strict=True, str_end=": ")
+PUNCT = rule(
+    type_('PUNCT')
 )
 
+NOT_FILLED = rule(
+    eq_('<'), eq_('не'), eq_('заполнено'), eq_('>')
+)
 
-COMMA = rule(
-    ","
-).named("COMMA")
+EOL = rule(
+    type_('EOL')
+)
 
-COLON = rule(
-    ": "
-).named("COLON")
+INT = rule(
+    type_('INT')
+)
 
-NEWLINE = or_(
-    rule(
-        "\n"
-    ),
-    rule(
-        "\t"
-    )
-).named("NEWLINE")
+FLOAT = rule(
+    type_('INT'), eq_(','), type_('INT')
+)
 
-NAME = or_(
-    *list_to_rules(NAMES)
-).named("NAME")
+DATE = rule(
+    type_('INT'), eq_('/'), type_('INT'), eq_('/'), type_('INT')
+)
 
-UNIT = or_(
-    *list_to_rules(UNITS)
-).named("UNIT")
+HYPHEN = or_(
+    eq_('-'), eq_('–')
+)
 
-SECTION_NAME = or_(
-    *list_to_rules(SECTION_NAMES)
-).named("SECTION_NAME")
+NUMBER = or_(
+    INT, FLOAT
+)
 
-FEATURE_NAME = or_(
-    *list_to_rules(FEATURE_NAMES)
-).named("FEATURE_NAME")
+VALUE = or_(
+    NUMBER, NOT_FILLED  
+)
 
-
-SUBFEATURE = forward()
-SUBFEATURE.define(
+WORDS = forward()
+WORDS.define(
     or_(
         rule(
-            NAME, COLON, VALUE, NEWLINE
+            WORD, WORDS
         ),
         rule(
-            NAME, COMMA, UNIT, COLON, VALUE, NEWLINE
+            WORD
+        ),
+        rule(
+            NOT_FILLED
         )
     )
-).named("SUBFEATURE")
+)
 
-FEATURE = forward()
+
+DATES = or_(
+    rule(
+        DATE.interpretation(DateLeaf.first_date), 
+        HYPHEN, 
+        DATE.interpretation(DateLeaf.last_date)
+    ),
+    rule(
+        DATE.interpretation(DateLeaf.first_date)
+    )
+).interpretation(DateLeaf)
+
+
+FEATURE = forward().interpretation(Node)
 FEATURE.define(
     or_(
         rule(
-            SUBFEATURE, FEATURE
+            NAME.interpretation(Node.name), 
+            PUNCT, 
+            WORDS.interpretation(Node.value)
         ),
         rule(
-            SUBFEATURE
+            NAME.interpretation(Node.name), 
+            PUNCT, 
+            DATES.interpretation(Node.children)
+        ),
+        rule(
+            NAME.interpretation(Node.name), 
+            PUNCT, 
+            UNIT.interpretation(Node.unit), 
+            PUNCT, 
+            VALUE.interpretation(Node.value) 
+        ),
+        rule(
+            WORDS.interpretation(Node.name), 
+            PUNCT, 
+            VALUE.interpretation(Node.value), 
+            WORD.interpretation(Node.unit)
         )
     )
-).named("FEATURE")
+)
 
-SECTION = forward()
+
+SECTION = forward().interpretation(Node)
 SECTION.define(
     or_(
         rule(
-            FEATURE_NAME, FEATURE_VALUE, FEATURE, SECTION
+            FEATURE_NAME.interpretation(Node.name), 
+            PUNCT, 
+            WORDS.interpretation(Node.value), 
+            EOL,
+            FEATURE.interpretation(Node.children).repeatable(),
+            EOL, 
+            SECTION
         ),
         rule(
-            FEATURE_NAME, FEATURE_VALUE, FEATURE
+            FEATURE_NAME.interpretation(Node.name), 
+            EOL,
+            FEATURE.interpretation(Node.children).repeatable(), 
+            EOL,
+            SECTION
+        ),
+        rule(
+            FEATURE.interpretation(Node.children).repeatable(), 
+            EOL,
+            SECTION
+        ),
+        rule(
+            FEATURE_NAME.interpretation(Node.name), 
+            PUNCT, 
+            WORDS.interpretation(Node.value), 
+            EOL,
+            FEATURE.interpretation(Node.children).repeatable()
+        ),
+        rule(
+            FEATURE_NAME.interpretation(Node.name), 
+            EOL,
+            FEATURE.interpretation(Node.children).repeatable()
+        ),
+        rule(
+            FEATURE.interpretation(Node.children).repeatable()
         )
     )
-).named("SECTION")
+)
 
+
+'''
 DOCUMENT = forward()
 DOCUMENT.define(
     or_(
         rule(
-            SECTION_NAME, SECTION, DOCUMENT
+            SECTION_NAME, NEWLINE, CUSTOM, NEWLINE, SECTION, DOCUMENT
         ),
         rule(
-            SECTION_NAME, SECTION
+            SECTION_NAME, NEWLINE, SECTION, DOCUMENT
+        ),
+        rule(
+            SECTION_NAME, NEWLINE, SECTION
         )
     )
 ).named("DOCUMENT")
 
 
 if __name__ == "__main__":
-    display(DOCUMENT.normalized.as_bnf)
-    
-    
+    parser = Parser(NAME)
+
+'''
