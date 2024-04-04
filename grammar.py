@@ -1,6 +1,6 @@
 from yargy import rule, or_, and_, forward
 from yargy.tokenizer import TokenRule, Tokenizer
-from yargy.predicates import eq as eq_, type as type_, in_
+from yargy.predicates import eq as eq_, type as type_, in_, and_, gte, lte
 from yargy import Parser
 import regex as re
 from funcs import get_docx_text, regex_between, list_to_eq_seq
@@ -29,15 +29,19 @@ INT = rule(
 )
 
 FLOAT = rule(
-    type_('INT'), eq_(','), type_('INT')
+    type_('FLOAT')
 )
 
 DATE = rule(
-    type_('INT'), eq_('/'), type_('INT'), eq_('/'), type_('INT')
+    and_(type_('INT'), gte(1), lte(31)), 
+    in_('/.'), 
+    and_(type_('INT'), gte(1), lte(12)), 
+    in_('/.'), 
+    and_(type_('INT'), gte(1900))
 )
 
-HYPHEN = or_(
-    eq_('-'), eq_('–')
+HYPHEN = rule(
+    type_('HYPHEN')
 )
 
 NUMBER = or_(
