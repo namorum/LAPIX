@@ -1,5 +1,5 @@
 from funcs import get_docx_text, print_tree
-from yargy.tokenizer import Tokenizer
+from tokenizer import tokenizer
 from yargy import Parser
 from grammar import NAME, UNIT, SECTION_NAME, FEATURE_NAME, WORDS, DATES, DATE, FEATURE, SECTION, DOCUMENT
 
@@ -7,8 +7,6 @@ from grammar import NAME, UNIT, SECTION_NAME, FEATURE_NAME, WORDS, DATES, DATE, 
 input = get_docx_text('file.docx')
 print(input, end="\n\n\n")
 
-
-tokenizer = Tokenizer()
 
 print([_.value for _ in tokenizer(input)])
 
@@ -22,7 +20,7 @@ print('\n\n\n')
 
 #for rule in [NAME, UNIT, SECTION_NAME, FEATURE_NAME, WORDS, DATE]:
 
-parser = Parser(FEATURE)
+parser = Parser(FEATURE, tokenizer=tokenizer)
 
 for match in parser.findall(input):
     print([_.value for _ in match.tokens])
