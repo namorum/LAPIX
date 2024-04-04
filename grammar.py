@@ -37,7 +37,7 @@ DATE = rule(
     in_('/.'), 
     and_(type_('INT'), gte(1), lte(12)), 
     in_('/.'), 
-    and_(type_('INT'), gte(1900))
+    and_(type_('INT'), gte(1900), lte(3000))
 )
 
 HYPHEN = rule(
