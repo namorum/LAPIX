@@ -3,6 +3,30 @@ from yargy.interpretation import fact, attribute
 
 Node = fact(
     'Node',
+    [
+        attribute('name', None).repeatable(),
+        attribute('children', None).repeatable()
+    ]
+)
+
+'''
+Section = fact(
+    'Section',
+    [
+        'name',
+        'content'
+    ]
+)
+
+SectionContent = fact(
+    'SectionContent',
+    [
+
+    ]
+)
+
+Node = fact(
+    'Node',
     [attribute('name', None),
      attribute('unit', None),
      attribute('value', None),
@@ -27,3 +51,4 @@ DateLeaf = fact(
         attribute('children', None)
     ]
 )
+'''

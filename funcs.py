@@ -52,9 +52,11 @@ def list_to_eq_seq(list_of_str: list [str]):
     return tuple(rules)
 
 
-def print_tree(tree, indent=0):
+def print_tree(tree, indent=0, debug=False):
+    if debug:
+        print(f'ОТЛАДКА – {tree}')
     print(f'{'\t'*indent*2}{tree}', end='\n\n')
-    if tree.children is not None:
+    if tree.children != []:
         for child in tree.children:
             print_tree(child, indent+1)
 
