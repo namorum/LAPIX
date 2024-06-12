@@ -1,5 +1,5 @@
 from yargy import Parser
-from grammar import DOCUMENT
+from grammar.grammar import DOCUMENT
 
 
 parser = Parser(

@@ -2,10 +2,9 @@ from yargy.interpretation import fact, attribute
 
 
 Node = fact(
-    'Node',
-    [
-        attribute('name', None).repeatable(),
-        attribute('children', None).repeatable()
+    'Node', [
+        'name',
+        attribute('successors', None).repeatable()
     ]
 )
 
