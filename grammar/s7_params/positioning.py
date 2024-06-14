@@ -23,7 +23,7 @@ MELT_FOCUS = or_(
         NAME, COLON, EOL, eq_("совмещены")
     ),
     rule(
-        NAME, COLON, EOL, eq_("совмещены"), EOL,
+        NAME, COLON, EOL, eq_("смещены"), EOL,
         MELT_FOCUS_AXIS.optional(), EOL.optional(), MELT_FOCUS_AXIS.optional()
     )
 )

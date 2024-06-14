@@ -4,8 +4,12 @@ from yargy.predicates import eq as eq_, type as type_, in_, gte, lte
 from gram_utils import recursive_interpreted_rule, sep_rule
 from basic_rules import *
 
-from pipelines import LASER_HEADER
-
+from pipelines import (
+    LASER_HEADER,
+    MODE_HEADER,
+    TIMED_POWER_HEADER,
+    LAYERED_POWER_HEADER
+)
 
 CONTINUAL_MODE = rule(
     eq_('непрерывный')

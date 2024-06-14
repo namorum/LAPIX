@@ -3,7 +3,7 @@ from gram_utils import recursive_interpreted_rule, sep_rule
 
 from pipelines import (
     REQS_HEADER,
-    DEFECT_HEADER,
+    DEFECTS_HEADER,
     MICROSTRUCTURE_HEADER
 )
 from basic_rules import *
@@ -25,7 +25,7 @@ DEFECT_LIST = recursive_interpreted_rule(
 )
 
 DEFECTS = sep_rule(
-    DEFECT_HEADER, DEFECT_LIST
+    DEFECTS_HEADER, DEFECT_LIST
 )
 
 REQS = sep_rule(

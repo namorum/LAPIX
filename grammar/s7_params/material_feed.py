@@ -4,7 +4,12 @@ from yargy.predicates import eq as eq_, type as type_, in_, gte, lte
 from gram_utils import recursive_interpreted_rule, sep_rule
 from basic_rules import *
 
-from pipelines import MATERIAL_FEED_HEADER
+from pipelines import (
+    MATERIAL_FEED_HEADER,
+    POWDER_FEED_HEADER,
+    POWDER_MIX_FEED_HEADER,
+    WIRE_FEED_HEADER
+)
 
 
 MATERIAL_INFO = rule(

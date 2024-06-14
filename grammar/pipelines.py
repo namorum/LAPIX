@@ -38,7 +38,7 @@ POWDER_HEADER = gzt(
 WIRE_HEADER = gzt(
     'Металлическая проволока'
 )
-DEFECT_HEADER = gzt(
+DEFECTS_HEADER = gzt(
     'Дефекты наплавленного материала'
 )
 

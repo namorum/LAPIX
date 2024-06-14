@@ -10,18 +10,7 @@ from pipelines import (
 from basic_rules import *
 
 
-GRANULOMETRY_FEATURE = rule(
-    eq_("диаметр"), eq_("от"), VALUE, eq_("до"), VALUE, UNIT, HYPHEN, 
-    VALUE, UNIT
-)
 
-GRANULOMETRY_FEATURE_LIST = recursive_interpreted_rule(
-    GRANULOMETRY_FEATURE, None, EOL, 10
-)
-
-GRANULOMETRY = sep_rule(
-    GRANULOMETRY_HEADER, GRANULOMETRY_FEATURE_LIST
-)
 
 MATERIAL_INFO = or_(
     rule(

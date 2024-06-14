@@ -5,9 +5,11 @@ import regex as re
 from utils import get_docx_text, regex_between, list_to_eq_seq
 from gram_utils import sep_rule
 
-from pipelines import NAME, UNIT, ELEMENTS_HEADER, GEOMETRY_HEADER
+from pipelines import (
+    NAME, UNIT, ELEMENTS_HEADER, GEOMETRY_HEADER, GRANULOMETRY_HEADER
+)
 from facts import Node
-from utils import get_recursive_interpreted_right_part
+from gram_utils import recursive_interpreted_rule
 
 
 WORD = rule(
@@ -136,7 +138,7 @@ FEATURE = or_(
 ).interpretation(Node)
 
 
-FEATURE_LIST = get_recursive_interpreted_right_part(
+FEATURE_LIST = recursive_interpreted_rule(
     FEATURE, Node.successors, sep=EOL
 )
 
@@ -155,4 +157,17 @@ ELEMENTS = sep_rule(
 
 GEOMETRY = sep_rule(
     GEOMETRY_HEADER, FEATURE_LIST
+)
+
+GRANULOMETRY_FEATURE = rule(
+    eq_("диаметр"), eq_("от"), VALUE, eq_("до"), VALUE, UNIT, HYPHEN, 
+    VALUE, UNIT
+)
+
+GRANULOMETRY_FEATURE_LIST = recursive_interpreted_rule(
+    GRANULOMETRY_FEATURE, None, EOL, 10
+)
+
+GRANULOMETRY = sep_rule(
+    GRANULOMETRY_HEADER, GRANULOMETRY_FEATURE_LIST
 )
