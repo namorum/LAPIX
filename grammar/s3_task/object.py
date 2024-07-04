@@ -8,15 +8,26 @@ from pipelines import (
 )
 from basic_rules import *
 
+from facts import NonTerm
+
 
 DETAIL = sep_rule(
-    DETAIL_HEADER, COLON, TEXT, FEATURE_LIST, GEOMETRY, FEATURE
-)
+    DETAIL_HEADER.interpretation(NonTerm.name), 
+    COLON, 
+    TEXT.interpretation(NonTerm.successors).repeatable(), 
+    FEATURE_LIST, 
+    GEOMETRY.interpretation(NonTerm.successors).repeatable(), 
+    FEATURE.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)
 
 SUBSTRATE = sep_rule(
-    SUBSTRATE_HEADER, FEATURE, GEOMETRY, FEATURE
-)
+    SUBSTRATE_HEADER.interpretation(NonTerm.name), 
+    FEATURE.interpretation(NonTerm.successors).repeatable(), 
+    GEOMETRY.interpretation(NonTerm.successors).repeatable(), 
+    FEATURE.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)
 
 OBJECT = sep_rule(
-    OBJECT_HEADER, or_(DETAIL, SUBSTRATE)
-)
+    OBJECT_HEADER.interpretation(NonTerm.name), 
+    or_(DETAIL, SUBSTRATE).interpretation(NonTerm.successors)
+).interpretation(NonTerm)

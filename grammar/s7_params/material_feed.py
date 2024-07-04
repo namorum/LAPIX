@@ -12,10 +12,9 @@ from pipelines import (
 )
 
 
-MATERIAL_INFO = rule(
-    NAME, HYPHEN, ELEMENTS, EOL,
-    NAME, COLON, EOL,
-    GRANULOMETRY, EOL,
+MATERIAL_INFO = sep_rule(
+    ELEMENTS,
+    GRANULOMETRY,
     FEATURE_LIST
 )
 
@@ -24,49 +23,58 @@ POWDER_FEED_INFO = sep_rule(
 )
 
 POWDER_FEED = rule(
-    POWDER_FEED_HEADER, COLON, EOL.optional(), 
-    NAME, EOL,
-    MATERIAL_INFO.optional(), EOL.optional(),
-    POWDER_FEED_INFO
-)
+    POWDER_FEED_HEADER.interpretation(NonTerm.name), 
+    COLON, EOL.optional(), 
+    TEXT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value), 
+    EOL,
+    MATERIAL_INFO.optional().interpretation(NonTerm.successors).repeatable(), 
+    EOL.optional(),
+    POWDER_FEED_INFO.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)
 
 ENUM_POWDER = rule(
-    NUMBER, PUNCT, EOL,
-    POWDER_FEED_HEADER, COLON, TEXT, EOL,
-    POWDER_FEED_INFO
-)
+    NUMBER.interpretation(NonTerm.name), 
+    PUNCT, EOL,
+    POWDER_FEED.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)
 
 ENUM_POWDER_LIST = recursive_interpreted_rule(
-    ENUM_POWDER, None, EOL, 5
+    ENUM_POWDER, NonTerm.successors, EOL, 5
 )
 
 POWDER_MIX_FEED = sep_rule(
-    POWDER_MIX_FEED_HEADER, ENUM_POWDER_LIST
-)
+    POWDER_MIX_FEED_HEADER.interpretation(NonTerm.name), 
+    ENUM_POWDER_LIST
+).interpretation(NonTerm)
 
 WIRE_FEED_METHOD = or_(
-    eq_("центральная"),
+    eq_("центральная").interpretation(TermString).interpretation(TermString.value),
     rule(
-        eq_("боковая"), eq_("под"), eq_("углом"), NUMBER, UNIT
+        eq_("боковая").interpretation(NonTerm), eq_("под"), eq_("углом"), 
+        NUMBER.interpretation(NonTerm.successors).repeatable().interpretation(TermReal).interpretation(TermReal.value), 
+        UNIT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value)
     )
 )
 
 WIRE_FEED_INFO = sep_rule(
-    FEATURE, WIRE_FEED_METHOD
+    FEATURE.interpretation(NonTerm.successors).repeatable(),
+    WIRE_FEED_METHOD.interpretation(NonTerm.successors).repeatable()
 )
 
 WIRE_FEED = rule(
-    WIRE_FEED_HEADER, COLON, EOL,
-    NAME, EOL,
-    MATERIAL_INFO.optional(), EOL.optional(),
+    WIRE_FEED_HEADER.interpretation(NonTerm.name), 
+    COLON, EOL,
+    TEXT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value), 
+    EOL,
+    MATERIAL_INFO.optional().interpretation(NonTerm.successors).repeatable(), EOL.optional(),
     WIRE_FEED_INFO
-)
+).interpretation(NonTerm)
 
 MATERIAL_FEED = sep_rule(
-    MATERIAL_FEED_HEADER,
+    MATERIAL_FEED_HEADER.interpretation(NonTerm.name),
     or_(
         POWDER_FEED,
         POWDER_MIX_FEED,
         WIRE_FEED
-    )
-)
+    ).interpretation(NonTerm.successors)
+).interpretation(NonTerm)

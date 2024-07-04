@@ -11,51 +11,65 @@ from pipelines import (
 )
 from basic_rules import *
 
+from facts import NonTerm, TermString
+
 
 RESULT_DEFECT_DESC = rule(
-    NAME, COLON, FEATURE, EOL, FEATURE_LIST
-)
+    NAME.interpretation(NonTerm.name), 
+    COLON,
+    FEATURE_LIST
+).interpretation(NonTerm)
 
 RESULT_DEFECT_EVAL = rule(
-    NAME, COLON, TEXT
-)
+    NAME.interpretation(NonTerm.name), 
+    COLON, 
+    TEXT.interpretation(NonTerm.successors)
+).interpretation(NonTerm)
 
 RESULT_DEFECT = sep_rule(
-    NAME, RESULT_DEFECT_DESC, RESULT_DEFECT_EVAL
-)
+    NAME.interpretation(NonTerm.name), 
+    RESULT_DEFECT_DESC.interpretation(NonTerm.successors).repeatable(), 
+    RESULT_DEFECT_EVAL.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)
 
 RESULT_DEFECT_LIST = recursive_interpreted_rule(
-    RESULT_DEFECT, None, EOL, 10
+    RESULT_DEFECT, NonTerm.successors, EOL, 10
 )
 
 RESULT_GEOMETRY = rule(
-    RESULT_GEOMETRY_HEADER, EOL, 
-    WORDS, EOL.optional(),
-    FEATURE.optional()
-)
+    RESULT_GEOMETRY_HEADER.interpretation(NonTerm.name), 
+    EOL, 
+    WORDS.interpretation(NonTerm.successors).repeatable(), 
+    EOL.optional(),
+    FEATURE.optional().interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)
 
 RESULT_ELEMENTS = sep_rule(
-    RESULT_ELEMENTS_HEADER,
-    TEXT_FEATURE,
-    TEXT_FEATURE
-)
+    RESULT_ELEMENTS_HEADER.interpretation(NonTerm.name),
+    TEXT_FEATURE.interpretation(NonTerm.successors).repeatable(),
+    TEXT_FEATURE.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)
 
 RESULT_MICROSTRUCTURE = sep_rule(
-    RESULT_MICROSTRUCTURE_HEADER,
-    TEXT_FEATURE,
-    TEXT_FEATURE
-)
+    RESULT_MICROSTRUCTURE_HEADER.interpretation(NonTerm.name),
+    TEXT_FEATURE.interpretation(NonTerm.successors).repeatable(),
+    TEXT_FEATURE.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)
 
 RESULT_DEFECTS = sep_rule(
-    RESULT_DEFECTS_HEADER, or_(RESULT_DEFECT_LIST, TEXT)
-)
+    RESULT_DEFECTS_HEADER.interpretation(NonTerm.name), 
+    or_(
+        RESULT_DEFECT_LIST, 
+        TEXT.interpretation(NonTerm.successors).interpretation(TermString).interpretation(TermString.value)
+    )
+).interpretation(NonTerm)
 
 RESULT_DESC = sep_rule(
-    RESULT_DESC_HEADER,
-    RESULT_GEOMETRY,
-    RESULT_ELEMENTS,
-    RESULT_MICROSTRUCTURE,
-    RESULT_DEFECTS,
-    TEXT_FEATURE,
-    TEXT_FEATURE
-)
+    RESULT_DESC_HEADER.interpretation(NonTerm.name),
+    RESULT_GEOMETRY.interpretation(NonTerm.successors).repeatable(),
+    RESULT_ELEMENTS.interpretation(NonTerm.successors).repeatable(),
+    RESULT_MICROSTRUCTURE.interpretation(NonTerm.successors).repeatable(),
+    RESULT_DEFECTS.interpretation(NonTerm.successors).repeatable(),
+    TEXT_FEATURE.interpretation(NonTerm.successors).repeatable(),
+    TEXT_FEATURE.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)

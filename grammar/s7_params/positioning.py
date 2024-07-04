@@ -7,31 +7,44 @@ from basic_rules import *
 
 
 WELD_FOCUS = rule(
-    NAME, COLON, EOL, TEXT
-)
+    NAME.interpretation(NonTerm.name), 
+    COLON, EOL, 
+    TEXT.interpretation(NonTerm.successors).interpretation(TermString).interpretation(TermString.value)
+).interpretation(NonTerm)
 
 MELT_FOCUS_AXIS = rule(
-    NAME, COLON, EOL, 
-    eq_("на"), NUMBER, UNIT, EOL,
+    NAME.interpretation(NonTerm.name), 
+    COLON, EOL, 
+    eq_("на"), 
+    NUMBER.interpretation(NonTerm.successors).repeatable().interpretation(TermReal).interpretation(TermReal.value), 
+    UNIT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value), EOL,
     or_(
         eq_("положительное"), eq_("отрицательное")
-    )
-)
+    ).interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value)
+).interpretation(NonTerm)
 
 MELT_FOCUS = or_(
     rule(
-        NAME, COLON, EOL, eq_("совмещены")
+        NAME.interpretation(NonTerm.name), 
+        COLON, EOL, 
+        eq_("совмещены").interpretation(NonTerm.successors).interpretation(TermString).interpretation(TermString.value)
     ),
     rule(
-        NAME, COLON, EOL, eq_("смещены"), EOL,
+        NAME.interpretation(NonTerm.name), 
+        COLON, EOL, 
+        eq_("смещены").interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value), 
+        EOL,
         MELT_FOCUS_AXIS.optional(), EOL.optional(), MELT_FOCUS_AXIS.optional()
     )
-)
+).interpretation(NonTerm)
 
 FOCUS_POSITION = or_(
     WELD_FOCUS, MELT_FOCUS
 )
 
 POSITIONING = sep_rule(
-    POSITIONING_HEADER, FEATURE_LIST, FOCUS_POSITION, TEXT_FEATURE
-)
+    POSITIONING_HEADER.interpretation(NonTerm.name), 
+    FEATURE_LIST, 
+    FOCUS_POSITION.interpretation(NonTerm.successors).repeatable(), 
+    TEXT_FEATURE.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)

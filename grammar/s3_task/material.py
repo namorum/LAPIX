@@ -9,33 +9,41 @@ from pipelines import (
 )
 from basic_rules import *
 
-
+from facts import NonTerm, TermString
 
 
 MATERIAL_INFO = or_(
     rule(
-        NUMBER.optional(), PUNCT.optional(), TEXT, EOL,
-        NAME, COLON, EOL,
-        ELEMENTS, EOL,
-        NAME, COLON, EOL,
-        GRANULOMETRY, EOL,
-        FEATURE_LIST
-    ),
-    TEXT
+        NUMBER.optional(), PUNCT.optional(), TEXT.interpretation(NonTerm.name), EOL,
+        ELEMENTS.optional().interpretation(NonTerm.successors).repeatable(), 
+        EOL.optional(),
+        GRANULOMETRY.optional().interpretation(NonTerm.successors).repeatable(), 
+        EOL.optional(),
+        FEATURE_LIST.interpretation(NonTerm.successors).repeatable()
+    ).interpretation(NonTerm),
+    rule(
+        NUMBER.optional(), PUNCT.optional(),
+        TEXT.interpretation(TermString.value)
+    ).interpretation(TermString)
 )
 
 MATERIAL_INFO_LIST = recursive_interpreted_rule(
-    MATERIAL_INFO, None, EOL, 5
+    MATERIAL_INFO, NonTerm.successors, EOL, 5
 )
 
 POWDER = sep_rule(
-    POWDER_HEADER, COLON, MATERIAL_INFO_LIST
-)
+    POWDER_HEADER.interpretation(NonTerm.name), 
+    COLON, 
+    MATERIAL_INFO_LIST
+).interpretation(NonTerm)
 
 WIRE = sep_rule(
-    WIRE_HEADER, COLON, MATERIAL_INFO
-)
+    WIRE_HEADER.interpretation(NonTerm.name), 
+    COLON, 
+    MATERIAL_INFO.interpretation(NonTerm.successors)
+).interpretation(NonTerm)
 
 MATERIAL = sep_rule(
-    MATERIAL_HEADER, or_(POWDER, WIRE)
-)
+    MATERIAL_HEADER.interpretation(NonTerm.name), 
+    or_(POWDER, WIRE).interpretation(NonTerm.successors)
+).interpretation(NonTerm)

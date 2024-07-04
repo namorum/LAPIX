@@ -6,7 +6,10 @@ from basic_rules import *
 
 from pipelines import HEAT_HEADER
 
+from facts import NonTerm
+
 
 HEAT = sep_rule(
-    HEAT_HEADER, FEATURE_LIST
-)
+    HEAT_HEADER.interpretation(NonTerm.name), 
+    FEATURE_LIST
+).interpretation(NonTerm)

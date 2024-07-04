@@ -6,15 +6,20 @@ from basic_rules import *
 
 from pipelines import GAS_MIX_HEADER
 
+from facts import NonTerm
+
 
 GAS_INFO = rule(
-    NUMBER, PUNCT, EOL, FEATURE_LIST
-)
+    NUMBER.interpretation(NonTerm.name), PUNCT, EOL, 
+    FEATURE_LIST
+).interpretation(NonTerm)
 
 GAS_INFO_LIST = recursive_interpreted_rule(
-    GAS_INFO, None, EOL, 5
+    GAS_INFO, NonTerm.successors, EOL, 5
 )
 
 GAS_MIX = sep_rule(
-    GAS_MIX_HEADER, FEATURE_LIST, GAS_INFO_LIST
-)
+    GAS_MIX_HEADER.interpretation(NonTerm.name), 
+    FEATURE_LIST, 
+    GAS_INFO_LIST
+).interpretation(NonTerm)

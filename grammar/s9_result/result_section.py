@@ -6,7 +6,11 @@ from pipelines import RESULT_HEADER
 from result_desc import RESULT_DESC
 from basic_rules import *
 
+from facts import NonTerm
+
 
 RESULT_SECTION = sep_rule(
-    RESULT_HEADER, TEXT_FEATURE, RESULT_DESC
-)
+    RESULT_HEADER.interpretation(NonTerm.name), 
+    TEXT_FEATURE.interpretation(NonTerm.successors), 
+    RESULT_DESC.interpretation(NonTerm.successors)
+).interpretation(NonTerm)

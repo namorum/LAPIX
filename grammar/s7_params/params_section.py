@@ -10,9 +10,15 @@ from material_feed import MATERIAL_FEED
 from positioning import POSITIONING
 from basic_rules import *
 
+from facts import NonTerm
+
 
 PARAMS_SECTION = sep_rule(
-    PARAMS_HEADER, HEAT, LASER, 
-    GAS_FEED, MATERIAL_FEED, 
-    POSITIONING, TEXT_FEATURE
-)
+    PARAMS_HEADER.interpretation(NonTerm.name), 
+    HEAT.interpretation(NonTerm.successors).repeatable(), 
+    LASER.interpretation(NonTerm.successors).repeatable(), 
+    GAS_FEED.interpretation(NonTerm.successors).repeatable(), 
+    MATERIAL_FEED.interpretation(NonTerm.successors).repeatable(), 
+    POSITIONING.interpretation(NonTerm.successors).repeatable(), 
+    TEXT_FEATURE.interpretation(NonTerm.successors).repeatable()
+).interpretation(NonTerm)

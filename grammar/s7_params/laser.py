@@ -11,42 +11,56 @@ from pipelines import (
     LAYERED_POWER_HEADER
 )
 
+from facts import NonTerm, TermReal, TermString
+
+
 CONTINUAL_MODE = rule(
-    eq_('непрерывный')
-)
+    eq_('непрерывный').interpretation(TermString.value)
+).interpretation(TermString)
 
 NON_CONTINUAL_MODE = sep_rule(
-    or_(eq_("модулированный"), eq_("импульсный")),
+    or_(
+        eq_("модулированный").interpretation(TermString.value),
+        eq_("импульсный").interpretation(TermString.value)
+    ).interpretation(NonTerm.successors).repeatable().interpretation(TermString),
     FEATURE_LIST
-)
+).interpretation(NonTerm)
 
 MODE = sep_rule(
-    MODE_HEADER, or_(CONTINUAL_MODE, NON_CONTINUAL_MODE)
-)
+    MODE_HEADER.interpretation(NonTerm.name), 
+    or_(CONTINUAL_MODE, NON_CONTINUAL_MODE).interpretation(NonTerm.successors)
+).interpretation(NonTerm)
 
 T_POWER_FEATURE = rule(
     FEATURE, PUNCT, FEATURE
 )
 
 T_POWER_FEATURE_LIST = recursive_interpreted_rule(
-    T_POWER_FEATURE, None, EOL, 10
+    T_POWER_FEATURE, NonTerm.successors, EOL, 10
 )
 
 L_POWER_FEATURE = rule(
-    NUMBER, UNIT, eq_("для"), or_(eq_("слоев"), eq_("слоёв")), 
-    COLON, eq_("с"), NUMBER, eq_("по"), NUMBER
-)
+    rule(
+        NUMBER.interpretation(NonTerm.successors).repeatable().interpretation(TermReal).interpretation(TermReal.value), 
+        UNIT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value)
+    ).interpretation(NonTerm.successors).repeatable().interpretation(NonTerm), 
+    rule(
+        rule(eq_("для"), or_(eq_("слоев"), eq_("слоёв"))), 
+        COLON, eq_("с"), NUMBER, eq_("по"), NUMBER
+    ).interpretation(NonTerm.name)
+).interpretation(NonTerm)
 
 L_POWER_FEATURE_LIST = recursive_interpreted_rule(
-    L_POWER_FEATURE, None, EOL, 10
+    L_POWER_FEATURE, NonTerm.successors, EOL, 10
 )
 
 TL_POWER_FEATURE =  sep_rule(
     T_POWER_FEATURE_LIST, 
-)
+    L_POWER_FEATURE_LIST
+).interpretation(NonTerm)
 
 TL_POWER_FEATURE_LIST = recursive_interpreted_rule(
-    L_POWER_FEATURE, None, EOL, 10
+    L_POWER_FEATURE, NonTerm.successors, EOL, 10
 )
 
 CONSTANT_POWER = rule(
@@ -54,22 +68,33 @@ CONSTANT_POWER = rule(
 )
 
 TIMED_POWER = rule(
-    TIMED_POWER_HEADER, COLON.optional(), EOL, T_POWER_FEATURE_LIST
-)
+    TIMED_POWER_HEADER.interpretation(NonTerm.name), 
+    COLON.optional(), EOL, 
+    T_POWER_FEATURE_LIST
+).interpretation(NonTerm)
 
 LAYERED_POWER = rule(
-    LAYERED_POWER_HEADER, COLON.optional(), EOL, L_POWER_FEATURE_LIST
-)
+    LAYERED_POWER_HEADER.interpretation(NonTerm.name), 
+    COLON.optional(), EOL, 
+    L_POWER_FEATURE_LIST
+).interpretation(NonTerm)
 
 TIMED_LAYERED_POWER = rule(
-    TIMED_POWER_HEADER, COLON.optional(), EOL, TL_POWER_FEATURE_LIST
-)
+    TIMED_POWER_HEADER.interpretation(NonTerm.name), 
+    COLON.optional(), EOL, 
+    TL_POWER_FEATURE_LIST
+).interpretation(NonTerm)
 
 POWER = or_(
-    CONSTANT_POWER, TIMED_POWER, 
-    LAYERED_POWER, TIMED_LAYERED_POWER
+    CONSTANT_POWER, 
+    TIMED_POWER, 
+    LAYERED_POWER, 
+    TIMED_LAYERED_POWER
 )
 
 LASER = sep_rule(
-    LASER_HEADER, MODE, POWER, FEATURE_LIST
-)
+    LASER_HEADER.interpretation(NonTerm.name), 
+    MODE.interpretation(NonTerm.successors).repeatable(), 
+    POWER.interpretation(NonTerm.successors).repeatable(), 
+    FEATURE_LIST
+).interpretation(NonTerm)

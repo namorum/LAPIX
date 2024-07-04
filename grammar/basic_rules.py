@@ -8,7 +8,7 @@ from gram_utils import sep_rule
 from pipelines import (
     NAME, UNIT, ELEMENTS_HEADER, GEOMETRY_HEADER, GRANULOMETRY_HEADER
 )
-from facts import Node
+from grammar.facts import NonTerm, TermString, TermReal, TermDate
 from gram_utils import recursive_interpreted_rule
 
 
@@ -57,16 +57,15 @@ DATE = rule(
     and_(type_('INT'), gte(1), lte(12)), 
     in_('/.'), 
     and_(type_('INT'), gte(1900), lte(3000))
-).interpretation(Node.name).interpretation(Node)
+).interpretation(TermDate).interpretation(TermDate.value)
 
 NUMBER = or_(
     INT, FLOAT
-)
+).interpretation(TermReal).interpretation(TermReal.value)
 
 VALUE = or_(
-    NUMBER.interpretation(Node.name), 
-    NOT_FILLED.interpretation(Node.name)
-).interpretation(Node)
+    NUMBER, NOT_FILLED
+)
 
 WORDS = forward()
 WORDS.define(
@@ -80,7 +79,7 @@ WORDS.define(
         rule(
             NOT_FILLED
         )
-    )
+    ).interpretation(TermString).interpretation(TermString.value)
 )
 
 TEXT_ELEMENT = or_(
@@ -95,79 +94,83 @@ TEXT.define(
             TEXT
         ),
         TEXT_ELEMENT
-    )
+    ).interpretation(TermString).interpretation(TermString.value)
 )
 
 FEATURE = or_(
     rule(
-        NAME.interpretation(Node.name), 
+        NAME.interpretation(NonTerm.name), 
         PUNCT, 
-        WORDS.interpretation(Node.name).interpretation(Node).interpretation(Node.successors).repeatable()
+        TEXT.interpretation(NonTerm.successors).interpretation(TermString).interpretation(TermString.value)
     ),
     rule(
-        NAME.interpretation(Node.name), 
-        PUNCT, 
-        DATE.interpretation(Node.successors).repeatable()
-    ),
-    rule(
-        NAME.interpretation(Node.name),
+        NAME.interpretation(NonTerm.name),
         PUNCT.optional(),
         EOL,
-        WORDS.interpretation(Node.name).interpretation(Node).interpretation(Node.successors).repeatable()
+        TEXT.interpretation(NonTerm.successors).interpretation(TermString).interpretation(TermString.value)
     ),
     rule(
-        NAME.interpretation(Node.name),
+        NAME.interpretation(NonTerm.name),
         PUNCT,
-        DATE.interpretation(Node.successors).repeatable(),
-        HYPHEN,
-        DATE.interpretation(Node.successors).repeatable()
+        DATE.interpretation(NonTerm.successors).repeatable().interpretation(TermDate).interpretation(TermDate.value),
+        HYPHEN.optional(),
+        DATE.optional().interpretation(NonTerm.successors).repeatable().interpretation(TermDate).interpretation(TermDate.value)
     ),
     rule(
-        NAME.interpretation(Node.name), 
+        NAME.interpretation(NonTerm.name), 
         PUNCT, 
-        UNIT.interpretation(Node.name).interpretation(Node).interpretation(Node.successors).repeatable(), 
+        UNIT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value), 
         PUNCT, 
-        VALUE.interpretation(Node.successors).repeatable() 
+        NUMBER.interpretation(NonTerm.successors).repeatable().interpretation(TermReal).interpretation(TermReal.value)
     ),
     rule(
-        WORDS.interpretation(Node.name), 
+        WORDS.interpretation(NonTerm.name), 
         PUNCT, 
-        VALUE.interpretation(Node.successors).repeatable(), 
-        WORD.interpretation(Node.name).interpretation(Node).interpretation(Node.successors).repeatable()
+        NUMBER.interpretation(NonTerm.successors).repeatable().interpretation(TermReal).interpretation(TermReal.value), 
+        WORD.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value)
     )
-).interpretation(Node)
+).interpretation(NonTerm)
 
 
 FEATURE_LIST = recursive_interpreted_rule(
-    FEATURE, Node.successors, sep=EOL
+    FEATURE, NonTerm.successors, sep=EOL
 )
 
-TEXT_FEATURE = or_(
-    rule(
-        NAME, COLON, EOL, TEXT
-    ),
-    rule(
-        NAME, COLON, TEXT
-    )
-)
+TEXT_FEATURE = rule(
+    NAME.interpretation(NonTerm.name), 
+    COLON, EOL.optional(), 
+    TEXT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value)
+).interpretation(NonTerm)
 
 ELEMENTS = sep_rule(
-    ELEMENTS_HEADER, FEATURE_LIST
-)
+    ELEMENTS_HEADER.interpretation(NonTerm.name), 
+    FEATURE_LIST
+).interpretation(NonTerm)
 
 GEOMETRY = sep_rule(
-    GEOMETRY_HEADER, FEATURE_LIST
-)
+    GEOMETRY_HEADER.interpretation(NonTerm.name),
+    FEATURE_LIST
+).interpretation(NonTerm)
 
 GRANULOMETRY_FEATURE = rule(
-    eq_("диаметр"), eq_("от"), VALUE, eq_("до"), VALUE, UNIT, HYPHEN, 
-    VALUE, UNIT
-)
+    and_(
+        rule(eq_("диаметр")), 
+        rule(eq_("от")), 
+        NUMBER, 
+        rule(eq_("до")), 
+        NUMBER, 
+        UNIT
+    ).interpretation(NonTerm.name), 
+    HYPHEN, 
+    NUMBER.interpretation(NonTerm.successors).repeatable().interpretation(TermReal).interpretation(TermReal.value), 
+    UNIT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value)
+).interpretation(NonTerm)
 
 GRANULOMETRY_FEATURE_LIST = recursive_interpreted_rule(
-    GRANULOMETRY_FEATURE, None, EOL, 10
+    GRANULOMETRY_FEATURE, NonTerm.successors, EOL, 10
 )
 
 GRANULOMETRY = sep_rule(
-    GRANULOMETRY_HEADER, GRANULOMETRY_FEATURE_LIST
-)
+    GRANULOMETRY_HEADER.interpretation(NonTerm.name), 
+    GRANULOMETRY_FEATURE_LIST
+).interpretation(NonTerm)

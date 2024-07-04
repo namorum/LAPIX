@@ -5,7 +5,10 @@ from gram_utils import sep_rule
 from pipelines import COOL_HEADER
 from basic_rules import FEATURE_LIST
 
+from facts import NonTerm
+
 
 COOL_SECTION = sep_rule(
-    COOL_HEADER, FEATURE_LIST
-)
+    COOL_HEADER.interpretation(NonTerm.name), 
+    FEATURE_LIST
+).interpretation(NonTerm)
