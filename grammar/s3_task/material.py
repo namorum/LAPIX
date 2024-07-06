@@ -1,25 +1,25 @@
 from yargy import rule, or_
-from gram_utils import recursive_interpreted_rule, sep_rule
+from ..gram_utils import recursive_interpreted_rule, sep_rule
 
-from pipelines import (
+from ..pipelines import (
     MATERIAL_HEADER,
     WIRE_HEADER,
     POWDER_HEADER,
     GRANULOMETRY_HEADER
 )
-from basic_rules import *
+from ..basic_rules import *
 
-from facts import NonTerm, TermString
+from ..facts import NonTerm, TermString
 
 
 MATERIAL_INFO = or_(
     rule(
         NUMBER.optional(), PUNCT.optional(), TEXT.interpretation(NonTerm.name), EOL,
-        ELEMENTS.optional().interpretation(NonTerm.successors).repeatable(), 
+        ELEMENTS.optional().interpretation(NonTerm.successors), 
         EOL.optional(),
-        GRANULOMETRY.optional().interpretation(NonTerm.successors).repeatable(), 
+        GRANULOMETRY.optional().interpretation(NonTerm.successors), 
         EOL.optional(),
-        FEATURE_LIST.interpretation(NonTerm.successors).repeatable()
+        FEATURE_LIST.interpretation(NonTerm.successors)
     ).interpretation(NonTerm),
     rule(
         NUMBER.optional(), PUNCT.optional(),

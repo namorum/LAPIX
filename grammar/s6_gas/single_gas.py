@@ -1,9 +1,9 @@
-from gram_utils import sep_rule
-from basic_rules import *
+from ..gram_utils import sep_rule
+from ..basic_rules import *
 
-from pipelines import SINGLE_GAS_HEADER
+from ..pipelines import SINGLE_GAS_HEADER
 
-from facts import NonTerm
+from ..facts import NonTerm
 
 
 SINGLE_GAS = sep_rule(

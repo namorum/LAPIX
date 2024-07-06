@@ -1,12 +1,12 @@
 from yargy import rule, or_, and_, forward
 from yargy.predicates import eq as eq_, type as type_, in_, gte, lte
 
-from gram_utils import recursive_interpreted_rule, sep_rule
-from basic_rules import *
+from ..gram_utils import recursive_interpreted_rule, sep_rule
+from ..basic_rules import *
 
-from pipelines import GAS_MIX_HEADER
+from ..pipelines import GAS_MIX_HEADER
 
-from facts import NonTerm
+from ..facts import NonTerm
 
 
 GAS_INFO = rule(

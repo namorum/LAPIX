@@ -1,55 +1,50 @@
 from yargy.pipelines import caseless_pipeline as gzt
 
 
-# Заголовки, связанные с общей информацией о протоколе
-INFO_HEADER = gzt(
+INFO_HEADER = gzt([
     'Протокол технологической операции'
-)
+])
 
-
-# Заголовки, связанные с информацией об условиях окружающей среды
-CONDITION_HEADER = gzt(
+CONDITION_HEADER = gzt([
     'Условия окружающей среды при выполнении технологической операции'
-)
+])
 
-
-# Заголовки, связанные с информацией о техническом задании
-TASK_HEADER = gzt(
+TASK_HEADER = gzt([
     'Техническое задание на выполнение технологической операции'
-)
-OBJECT_HEADER = gzt(
+])
+OBJECT_HEADER = gzt([
     'Объект обработки'
-)
-MATERIAL_HEADER = gzt(
+])
+MATERIAL_HEADER = gzt([
     'Материал для выполнения технологической операции'
-)
-REQS_HEADER = gzt(
+])
+REQS_HEADER = gzt([
     'Требования к результату операции'
-)
-DETAIL_HEADER = gzt(
+])
+DETAIL_HEADER = gzt([
     'Деталь'
-)
-SUBSTRATE_HEADER = gzt(
+])
+SUBSTRATE_HEADER = gzt([
     'Подложка'
-)
-POWDER_HEADER = gzt(
+])
+POWDER_HEADER = gzt([
     'Металлический порошок'
-)
-WIRE_HEADER = gzt(
+])
+WIRE_HEADER = gzt([
     'Металлическая проволока'
-)
-DEFECTS_HEADER = gzt(
+])
+DEFECTS_HEADER = gzt([
     'Дефекты наплавленного материала'
-)
+])
 
 
 # Заголовки, связанные с информацией об оборудовании
-EQUIPMENT_HEADER = gzt(
+EQUIPMENT_HEADER = gzt([
     'Оборудование для выполнения технологической операции'
-)
-FEEDER_HEADER = gzt(
+])
+FEEDER_HEADER = gzt([
     ''
-)
+])
 
 
 # Заголовки, связанные с информацией о предварительной подготовки
@@ -57,21 +52,21 @@ PREPARE_HEADER = gzt([
     'Предварительная подготовка подложки',
     'Предварительная подготовка детали'
 ])
-PRE_HEAT_HEADER = gzt(
+PRE_HEAT_HEADER = gzt([
     ''
-)
+])
 
 
 # Заголовки, связанные с информацией о газовой среде
-GAS_HEADER = gzt(
+GAS_HEADER = gzt([
     'Газовая среда в рабочей камере'
-)
-SINGLE_GAS_HEADER = gzt(
+])
+SINGLE_GAS_HEADER = gzt([
     'Наполняющий газ'
-)
-GAS_MIX_HEADER = gzt(
+])
+GAS_MIX_HEADER = gzt([
     'Наполняющая газовая смесь'
-)
+])
 
 
 # Заголовки, связанные с информацией о параметрах выполнения
@@ -79,94 +74,94 @@ PARAMS_HEADER = gzt([
     'Ключевые параметры выполнения ТО',
     'Ключевые параметры выполнения процесса'
 ])
-HEAT_HEADER = gzt(
+HEAT_HEADER = gzt([
     'Сопутствующий нагрев объекта обработки'
-)
-LASER_HEADER = gzt(
+])
+LASER_HEADER = gzt([
     'Параметры лазерного излучения'
-)
-GAS_FEED_HEADER = gzt(
+])
+GAS_FEED_HEADER = gzt([
     'Параметры подачи технологических газов'
-)
-MATERIAL_FEED_HEADER = gzt(
+])
+MATERIAL_FEED_HEADER = gzt([
     'Параметры подачи материала'
-)
-POSITIONING_HEADER = gzt(
+])
+POSITIONING_HEADER = gzt([
     'Параметры перемещения и позиционирования рабочего инструмента относительно обрабатываемой поверхности'
-)
-MODE_HEADER = gzt(
+])
+MODE_HEADER = gzt([
     'Режим генерации лазерного излучения'
-)
-TRANSPORT_GAS_HEADER = gzt(
+])
+TRANSPORT_GAS_HEADER = gzt([
     'Параметры транспортирующего газа'
-)
-COMPRESSION_GAS_HEADER = gzt(
+])
+COMPRESSION_GAS_HEADER = gzt([
     'Параметры обжимающего газа'
-)
-POWDER_MIX_FEED_HEADER = gzt(
+])
+POWDER_MIX_FEED_HEADER = gzt([
     'Композиция металлических порошков'
-)
-POWDER_FEED_HEADER = gzt(
+])
+POWDER_FEED_HEADER = gzt([
     'Металлический порошок'
-)
-WIRE_FEED_HEADER = gzt(
+])
+WIRE_FEED_HEADER = gzt([
     'Металлическая проволока'
-)
-TIMED_POWER_HEADER = gzt(
+])
+TIMED_POWER_HEADER = gzt([
     'Значение мощности изменялось в процессе перемещения лазерного пучка по обрабатываемой поверхности'
-)
-LAYERED_POWER_HEADER = gzt(
+])
+LAYERED_POWER_HEADER = gzt([
     'Значение мощности по слоям'
-)
-SINGLE_SHIELD_GAS_HEADER = gzt(
+])
+SINGLE_SHIELD_GAS_HEADER = gzt([
     'Параметры защитного газа'
-)
-SHIELD_GAS_MIX_HEADER = gzt(
+])
+SHIELD_GAS_MIX_HEADER = gzt([
     'Параметры защитной газовой смеси'
-)
+])
 
 
 # Заголовки, связанные с информацией о контролируемом охлаждении
-COOL_HEADER = gzt(
+COOL_HEADER = gzt([
     'Контролируемое охлаждение'
-)
+])
 
 
 # Заголовки, связанные с информацией о результате выполнения
-RESULT_HEADER = gzt(
+RESULT_HEADER = gzt([
     'Результат выполнения технологической операции'
-)
-RESULT_DESC_HEADER = gzt(
+])
+RESULT_DESC_HEADER = gzt([
     'Описание результата'
-)
-RESULT_GEOMETRY_HEADER = gzt(
+])
+RESULT_GEOMETRY_HEADER = gzt([
     'Геометрические характеристики'
-)
-RESULT_ELEMENTS_HEADER = gzt(
+])
+RESULT_ELEMENTS_HEADER = gzt([
     'Элементный состав'
-)
-RESULT_MICROSTRUCTURE_HEADER = gzt(
+])
+RESULT_MICROSTRUCTURE_HEADER = gzt([
     'Микроструктура'
-)
-RESULT_DEFECTS_HEADER = gzt(
+])
+RESULT_DEFECTS_HEADER = gzt([
     'Дефекты наплавленного материала'
-)
+])
 
 
 # Заголовки, связанные с общими правилами
-GEOMETRY_HEADER = gzt(
+GEOMETRY_HEADER = gzt([
     "Геометрические характеристики"
-)
-ELEMENTS_HEADER = gzt(
+])
+ELEMENTS_HEADER = gzt([
     "Элементный состав"
-)
-MICROSTRUCTURE_HEADER = gzt(
+])
+MICROSTRUCTURE_HEADER = gzt([
     "Микроструктура"
-)
-GRANULOMETRY_HEADER = gzt(
+])
+GRANULOMETRY_HEADER = gzt([
     "Размер частиц",
     "Гранулометрический состав"
-)
+])
 
 
 # Единицы измерения значений
@@ -182,6 +177,7 @@ UNIT = gzt([
     "кВт",
     "Вт/см2",
     "г/с",
+    "г/см3",
     "г/мин",
     "мм/с",
     "л/мин",
@@ -202,8 +198,14 @@ UNIT = gzt([
 
 # Напименования заранее определённых свойств
 NAME = gzt([
+    "Номер протокола технологической операции",
+    "Срок выполнения технологической операции",
+    "Цель выполнения технологической операции",
+    "Место выполнения технологической операции",
     "Температура окружающей среды",
+    "Температура"
     "Влажность окружающей среды",
+    "Относительная влажность",
     "Атмосферное давление",
     "Материал основы",
     "Материал рабочей поверхности",

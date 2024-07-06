@@ -1,5 +1,5 @@
 from yargy import rule, or_
-from basic_rules import EOL
+from yargy.predicates import type as type_
 
 
 '''
@@ -22,7 +22,7 @@ def recursive_interpreted_rule(right, right_interpretation=None, sep=None, max_r
     return or_(*list_of_right_rules)
 
 
-def sep_rule(*args, sep=EOL):
+def sep_rule(*args, sep=rule(type_('EOL'))):
     new_args = []
     for el in args:
         new_args.append(el)

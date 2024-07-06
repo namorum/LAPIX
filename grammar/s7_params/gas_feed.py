@@ -1,16 +1,15 @@
 from yargy import rule, or_
-from gram_utils import recursive_interpreted_rule, sep_rule
 
-from pipelines import (
+from ..gram_utils import recursive_interpreted_rule, sep_rule
+from ..pipelines import (
     GAS_FEED_HEADER,
     SINGLE_SHIELD_GAS_HEADER,
     SHIELD_GAS_MIX_HEADER,
     TRANSPORT_GAS_HEADER,
     COMPRESSION_GAS_HEADER
 )
-from basic_rules import *
-
-from facts import NonTerm
+from ..basic_rules import *
+from ..facts import NonTerm
 
 
 GAS_INFO = rule(
@@ -49,7 +48,7 @@ COMPRESSION_GAS = sep_rule(
 
 GAS_FEED = sep_rule(
     GAS_FEED_HEADER.interpretation(NonTerm.name), 
-    SHIELD_GAS.interpretation(NonTerm.successors).repeatable(), 
-    TRANSPORT_GAS.interpretation(NonTerm.successors).repeatable(), 
-    COMPRESSION_GAS.interpretation(NonTerm.successors).repeatable()
+    SHIELD_GAS.interpretation(NonTerm.successors), 
+    TRANSPORT_GAS.interpretation(NonTerm.successors), 
+    COMPRESSION_GAS.interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

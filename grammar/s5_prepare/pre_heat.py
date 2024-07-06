@@ -1,9 +1,9 @@
-from gram_utils import sep_rule
-from basic_rules import *
+from ..gram_utils import sep_rule
+from ..basic_rules import *
 
-from pipelines import PRE_HEAT_HEADER
+from ..pipelines import PRE_HEAT_HEADER
 
-from facts import NonTerm
+from ..facts import NonTerm
 
 
 PRE_HEAT = sep_rule(

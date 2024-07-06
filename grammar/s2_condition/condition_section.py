@@ -1,9 +1,9 @@
-from gram_utils import sep_rule
+from ..gram_utils import sep_rule
 
-from pipelines import CONDITION_HEADER
-from basic_rules import FEATURE_LIST
+from ..pipelines import CONDITION_HEADER
+from ..basic_rules import FEATURE_LIST
 
-from facts import NonTerm
+from ..facts import NonTerm
 
 
 CONDITION_SECTION = sep_rule(

@@ -1,14 +1,14 @@
 from yargy import rule
-from gram_utils import recursive_interpreted_rule, sep_rule
+from ..gram_utils import recursive_interpreted_rule, sep_rule
 
-from pipelines import (
+from ..pipelines import (
     REQS_HEADER,
     DEFECTS_HEADER,
     MICROSTRUCTURE_HEADER
 )
-from basic_rules import *
+from ..basic_rules import *
 
-from facts import NonTerm
+from ..facts import NonTerm
 
 
 MICROSTRUCTURE = sep_rule(
@@ -21,8 +21,8 @@ MICROSTRUCTURE = sep_rule(
 DEFECT = rule(
     NAME.interpretation(NonTerm.name), 
     HYPHEN, 
-    VALUE.interpretation(NonTerm.successors).repeatable(), 
-    UNIT.optional().interpretation(NonTerm.successors).repeatable(), EOL, 
+    VALUE.interpretation(NonTerm.successors), 
+    UNIT.optional().interpretation(NonTerm.successors), EOL, 
     FEATURE_LIST
 ).interpretation(NonTerm)
 
@@ -37,8 +37,8 @@ DEFECTS = sep_rule(
 
 REQS = sep_rule(
     REQS_HEADER.interpretation(NonTerm.name), 
-    DEFECTS.interpretation(NonTerm.successors).repeatable(), 
-    GEOMETRY.interpretation(NonTerm.successors).repeatable(), 
-    ELEMENTS.interpretation(NonTerm.successors).repeatable(), 
-    MICROSTRUCTURE.interpretation(NonTerm.successors).repeatable()
+    DEFECTS.interpretation(NonTerm.successors), 
+    GEOMETRY.interpretation(NonTerm.successors), 
+    ELEMENTS.interpretation(NonTerm.successors), 
+    MICROSTRUCTURE.interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

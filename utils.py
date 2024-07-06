@@ -38,10 +38,12 @@ def regex_between(x1, x2, is_strict=False, str_end=""):
 
 
 def print_tree(tree, indent=0):
-    print(f'ОТЛАДКА – {tree}')
     if tree.type == 'НЕТЕРМИНАЛ':
-        print(f'{'\t'*indent*2}{tree.name}', end='\n\n')
+        print(f'{'\t'*indent*2}{tree.name}')
+        print(f'{'\t'*indent*2}{tree.type}', end='\n\n')
         for successor in tree.successors:
             print_tree(successor, indent+1)
     else:
-        print(f'{'\t'*indent*2}{tree.value}', end='\n\n')
+        print(f'{'\t'*indent*2}{tree.value}')
+        print(f'{'\t'*indent*2}{tree.type}')
+        print(f'{'\t'*indent*2}{tree.valtype}', end='\n\n')

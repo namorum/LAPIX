@@ -1,14 +1,12 @@
-from gram_utils import sep_rule
+from ..gram_utils import sep_rule
+from ..pipelines import EQUIPMENT_HEADER
+from ..basic_rules import FEATURE_LIST
+from ..facts import NonTerm
 
-from pipelines import EQUIPMENT_HEADER
-from basic_rules import FEATURE_LIST
-from feeder import FEEDER
-
-from facts import NonTerm
-
+from .feeder import FEEDER
 
 EQUIPMENT_SECTION = sep_rule(
     EQUIPMENT_HEADER.interpretation(NonTerm.name), 
     FEATURE_LIST, 
-    FEEDER.interpretation(NonTerm.successors).repeatable()
+    FEEDER.interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

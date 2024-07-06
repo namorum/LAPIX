@@ -1,15 +1,15 @@
-from yargy import rule, or_, and_, forward
+from yargy import rule, or_, and_, not_, forward
 from yargy.predicates import eq as eq_, type as type_, in_, gte, lte
 from yargy import Parser
 import regex as re
-from utils import get_docx_text, regex_between, list_to_eq_seq
-from gram_utils import sep_rule
 
-from pipelines import (
+from utils import get_docx_text, regex_between
+from .gram_utils import sep_rule, recursive_interpreted_rule
+
+from .pipelines import (
     NAME, UNIT, ELEMENTS_HEADER, GEOMETRY_HEADER, GRANULOMETRY_HEADER
 )
 from grammar.facts import NonTerm, TermString, TermReal, TermDate
-from gram_utils import recursive_interpreted_rule
 
 
 WORD = rule(
@@ -56,12 +56,12 @@ DATE = rule(
     in_('/.'), 
     and_(type_('INT'), gte(1), lte(12)), 
     in_('/.'), 
-    and_(type_('INT'), gte(1900), lte(3000))
-).interpretation(TermDate).interpretation(TermDate.value)
+    and_(type_('INT'), gte(1900))
+)
 
 NUMBER = or_(
     INT, FLOAT
-).interpretation(TermReal).interpretation(TermReal.value)
+)
 
 VALUE = or_(
     NUMBER, NOT_FILLED
@@ -82,52 +82,53 @@ WORDS.define(
     ).interpretation(TermString).interpretation(TermString.value)
 )
 
-TEXT_ELEMENT = or_(
-    WORD, NUMBER, PUNCT, COLON, HYPHEN
+TEXT = rule(
+    not_(type_('EOL')).repeatable()
 )
 
-TEXT = forward()
-TEXT.define(
-    or_(
-        rule(
-            TEXT_ELEMENT, 
-            TEXT
-        ),
-        TEXT_ELEMENT
-    ).interpretation(TermString).interpretation(TermString.value)
-)
+DATE_FEATURE = rule(
+    NAME.interpretation(NonTerm.name),
+    COLON,
+    DATE.interpretation(TermDate.value).interpretation(TermDate).interpretation(NonTerm.successors),
+    HYPHEN.optional(),
+    DATE.optional().interpretation(TermDate.value).interpretation(TermDate).interpretation(NonTerm.successors)
+).interpretation(NonTerm)
 
 FEATURE = or_(
     rule(
         NAME.interpretation(NonTerm.name), 
         PUNCT, 
-        TEXT.interpretation(NonTerm.successors).interpretation(TermString).interpretation(TermString.value)
-    ),
-    rule(
-        NAME.interpretation(NonTerm.name),
-        PUNCT.optional(),
-        EOL,
-        TEXT.interpretation(NonTerm.successors).interpretation(TermString).interpretation(TermString.value)
-    ),
-    rule(
-        NAME.interpretation(NonTerm.name),
-        PUNCT,
-        DATE.interpretation(NonTerm.successors).repeatable().interpretation(TermDate).interpretation(TermDate.value),
-        HYPHEN.optional(),
-        DATE.optional().interpretation(NonTerm.successors).repeatable().interpretation(TermDate).interpretation(TermDate.value)
+        UNIT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors), 
+        COLON, 
+        NUMBER.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
     ),
     rule(
         NAME.interpretation(NonTerm.name), 
-        PUNCT, 
-        UNIT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value), 
-        PUNCT, 
-        NUMBER.interpretation(NonTerm.successors).repeatable().interpretation(TermReal).interpretation(TermReal.value)
+        COLON, 
+        NUMBER.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
+        UNIT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
     ),
     rule(
         WORDS.interpretation(NonTerm.name), 
         PUNCT, 
-        NUMBER.interpretation(NonTerm.successors).repeatable().interpretation(TermReal).interpretation(TermReal.value), 
-        WORD.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value)
+        NUMBER.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors), 
+        WORD.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+    ),
+    rule(
+        NAME.interpretation(NonTerm.name), 
+        COLON, 
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+    ),
+    rule(
+        NAME.interpretation(NonTerm.name),
+        COLON.optional(),
+        EOL,
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+    ),
+    rule(
+        TEXT.interpretation(NonTerm.name),
+        COLON,
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
     )
 ).interpretation(NonTerm)
 
@@ -153,7 +154,7 @@ GEOMETRY = sep_rule(
 ).interpretation(NonTerm)
 
 GRANULOMETRY_FEATURE = rule(
-    and_(
+    rule(
         rule(eq_("диаметр")), 
         rule(eq_("от")), 
         NUMBER, 
