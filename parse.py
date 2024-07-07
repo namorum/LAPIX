@@ -3,18 +3,7 @@ from docx import Document
 
 from tokenizer import tokenizer
 
-from grammar.grammar import DOCUMENT
-
-from grammar.s1_info.info_section import INFO_SECTION
-from grammar.s2_condition.condition_section import CONDITION_SECTION
-from grammar.s3_task.task_section import TASK_SECTION
-from grammar.s4_equipment.equipment_section import EQUIPMENT_SECTION
-from grammar.s5_prepare.prepare_section import PREPARE_SECTION
-from grammar.s6_gas.gas_section import GAS_SECTION
-from grammar.s7_params.params_section import PARAMS_SECTION
-from grammar.s8_cool.cool_section import COOL_SECTION
-from grammar.s9_result.result_section import RESULT_SECTION
-
+from grammar.grammar import *
 
 def get_docx_text(path):
     document = Document(path)

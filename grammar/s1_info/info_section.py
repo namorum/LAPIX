@@ -3,7 +3,7 @@ from yargy.predicates import eq as eq_
 from ..gram_utils import sep_rule
 
 from ..pipelines import INFO_HEADER, NAME
-from ..basic_rules import TEXT, FEATURE_LIST, EOL, FEATURE, DATE_FEATURE, COLON
+from ..basic_rules import TEXT, FEATURE, DATE_FEATURE, COLON
 
 from ..facts import NonTerm, TermString
 
