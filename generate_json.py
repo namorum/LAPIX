@@ -15,47 +15,32 @@ json_header = {
             "successors" :
             [
                 {
-                    "name" : "Технологическая операция",
+                    "name" : "Ремонтное восстановление детали",
                     "type" : "НЕТЕРМИНАЛ",
-                    "successors" : []
+                    "successors" :
+                    []
                 }
             ]
         }
     ]
 }
 
-def __prepare_output(tree, output):
-    output.type = tree.type
-    if tree.type == 'НЕТЕРМИНАЛ':
-        output.name = tree.name
-        output.successors = []
-        for successor in tree.successors:
-            output.successors.append({})
-            __prepare_output(successor, output.successors[-1])
+
+def __tree_to_json(tree):
+    output = json_header
+    # Если название протокола в нижнем регистре содержит "наплавк", то..., иначе...
+    if tree['successors'][0]['value'].lower().find("наплавк") > -1:
+        output['successors'][0]['name'] = "Наплавка"
     else:
-        output.value = tree.value
-        output.valtype = tree.valtype
-
-
-def __tree_to_json(tree, debug=False):
-    if not debug:
-        output = json_header
-        protocol_name = str(tree.successors[0].name) 
-        if protocol_name.find("Наплавк") > -1:
-            output.successors[0].name = "Наплавка"
-        else:
-            output.successors[0].name = "Сварка"
-    else:
-        output = {}
-    __prepare_output(tree, output)
-
-    output = json.dumps(output, sort_keys=True, indent=4)
-    if debug:
-        print(output)
+        output['successors'][0]['name'] = "Сварка"
+    tree['name'] = 'Наплавка металлопорошковых материалов на основе олова'      # Временная мера, пока не дадут право на добавление новых классов ТО
+    output['successors'][0]['successors'][0]['successors'].append(tree)
+    output = json.dumps(output, sort_keys=False, indent=4, ensure_ascii=False)
 
     return output
 
 
 def generate_json(tree):
-    with open('example.json') as file:
-        file.write(__tree_to_json(tree))
+    json_output = __tree_to_json(tree)
+    with open(f'{tree['successors'][0]['value']}.universal.json', 'w', encoding='utf-8-sig') as file:
+        file.write(json_output)

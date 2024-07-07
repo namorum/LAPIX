@@ -13,7 +13,6 @@ from .material_feed import MATERIAL_FEED
 from .positioning import POSITIONING
 
 
-
 PARAMS_SECTION = sep_rule(
     PARAMS_HEADER.interpretation(NonTerm.name), 
     HEAT.interpretation(NonTerm.successors), 
@@ -21,5 +20,5 @@ PARAMS_SECTION = sep_rule(
     GAS_FEED.interpretation(NonTerm.successors), 
     MATERIAL_FEED.interpretation(NonTerm.successors), 
     POSITIONING.interpretation(NonTerm.successors), 
-    TEXT_FEATURE.interpretation(NonTerm.successors)
+    TEXT_FEATURE.optional().interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

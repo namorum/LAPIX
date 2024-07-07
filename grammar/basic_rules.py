@@ -3,7 +3,6 @@ from yargy.predicates import eq as eq_, type as type_, in_, gte, lte
 from yargy import Parser
 import regex as re
 
-from utils import get_docx_text, regex_between
 from .gram_utils import sep_rule, recursive_interpreted_rule
 
 from .pipelines import (
@@ -52,15 +51,11 @@ FLOAT = rule(
 )
 
 DATE = rule(
-    and_(type_('INT'), gte(1), lte(31)), 
-    in_('/.'), 
-    and_(type_('INT'), gte(1), lte(12)), 
-    in_('/.'), 
-    and_(type_('INT'), gte(1900))
+    type_('DATE')
 )
 
 NUMBER = or_(
-    INT, FLOAT
+    FLOAT, INT
 )
 
 VALUE = or_(
@@ -79,7 +74,7 @@ WORDS.define(
         rule(
             NOT_FILLED
         )
-    ).interpretation(TermString).interpretation(TermString.value)
+    )
 )
 
 TEXT = rule(
@@ -99,53 +94,96 @@ FEATURE = or_(
         NAME.interpretation(NonTerm.name), 
         PUNCT, 
         UNIT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors), 
-        COLON, 
-        NUMBER.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+        or_(COLON, HYPHEN),
+        EQ.optional().interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors), 
+        NUMBER.interpretation(TermReal.value).interpretation(TermReal).interpretation(NonTerm.successors),
+        rule(
+            HYPHEN,
+            NUMBER.interpretation(TermReal.value).interpretation(TermReal).interpretation(NonTerm.successors)
+        ).optional(),
+        EOL.optional()
+    ),
+    rule(
+        NAME.interpretation(NonTerm.name), 
+        or_(COLON, HYPHEN), 
+        EQ.optional().interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
+        NUMBER.interpretation(TermReal.value).interpretation(TermReal).interpretation(NonTerm.successors),
+        rule(
+            HYPHEN,
+            NUMBER.interpretation(TermReal.value).interpretation(TermReal).interpretation(NonTerm.successors)
+        ).optional(),
+        UNIT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
+        EOL.optional()
     ),
     rule(
         NAME.interpretation(NonTerm.name), 
         COLON, 
-        NUMBER.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
-        UNIT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
-    ),
-    rule(
-        WORDS.interpretation(NonTerm.name), 
-        PUNCT, 
-        NUMBER.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors), 
-        WORD.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
-    ),
-    rule(
-        NAME.interpretation(NonTerm.name), 
-        COLON, 
-        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
+        EOL.optional()
     ),
     rule(
         NAME.interpretation(NonTerm.name),
         COLON.optional(),
         EOL,
-        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
-    ),
-    rule(
-        TEXT.interpretation(NonTerm.name),
-        COLON,
-        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
+        EOL.optional()
     )
 ).interpretation(NonTerm)
-
 
 FEATURE_LIST = recursive_interpreted_rule(
     FEATURE, NonTerm.successors, sep=EOL
 )
 
-TEXT_FEATURE = rule(
-    NAME.interpretation(NonTerm.name), 
-    COLON, EOL.optional(), 
-    TEXT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value)
+CUSTOM_FEATURE = or_(
+    
+    rule(
+        WORDS.interpretation(NonTerm.name),
+        PUNCT, 
+        UNIT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors), 
+        or_(HYPHEN, COLON, PUNCT), 
+        NUMBER.interpretation(TermReal.value).interpretation(TermReal).interpretation(NonTerm.successors), 
+        EOL.optional()
+    ),
+    rule(
+        WORDS.interpretation(NonTerm.name), 
+        or_(PUNCT, COLON, HYPHEN), 
+        NUMBER.interpretation(TermReal.value).interpretation(TermReal).interpretation(NonTerm.successors), 
+        WORD.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
+        EOL.optional()
+    ),
+    rule(
+        WORDS.interpretation(NonTerm.name),
+        or_(PUNCT, COLON, HYPHEN),
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
+        EOL.optional()
+    )
+).interpretation(NonTerm)
+
+CUSTOM_FEATURE_LIST = recursive_interpreted_rule(
+    CUSTOM_FEATURE, NonTerm.successors, sep=EOL
+)
+
+TEXT_FEATURE = or_(
+    rule(
+        NAME.interpretation(NonTerm.name), 
+        COLON, EOL, 
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+    ),
+    rule(
+        NAME.interpretation(NonTerm.name), 
+        COLON, 
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+    ),
+    rule(
+        NAME.interpretation(NonTerm.name), 
+        EOL, 
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+    )
 ).interpretation(NonTerm)
 
 ELEMENTS = sep_rule(
     ELEMENTS_HEADER.interpretation(NonTerm.name), 
-    FEATURE_LIST
+    CUSTOM_FEATURE_LIST
 ).interpretation(NonTerm)
 
 GEOMETRY = sep_rule(
@@ -163,8 +201,8 @@ GRANULOMETRY_FEATURE = rule(
         UNIT
     ).interpretation(NonTerm.name), 
     HYPHEN, 
-    NUMBER.interpretation(NonTerm.successors).repeatable().interpretation(TermReal).interpretation(TermReal.value), 
-    UNIT.interpretation(NonTerm.successors).repeatable().interpretation(TermString).interpretation(TermString.value)
+    NUMBER.interpretation(TermReal.value).interpretation(TermReal).interpretation(NonTerm.successors),
+    UNIT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
 ).interpretation(NonTerm)
 
 GRANULOMETRY_FEATURE_LIST = recursive_interpreted_rule(

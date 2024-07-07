@@ -1,6 +1,6 @@
 from ..gram_utils import sep_rule
 from ..pipelines import EQUIPMENT_HEADER
-from ..basic_rules import FEATURE_LIST
+from ..basic_rules import FEATURE_LIST, FEATURE
 from ..facts import NonTerm
 
 from .feeder import FEEDER

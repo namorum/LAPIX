@@ -6,7 +6,9 @@ from ..pipelines import FEEDER_HEADER
 from ..facts import NonTerm
 
 
-FEEDER = sep_rule(
-    FEEDER_HEADER.interpretation(NonTerm.name), 
+FEEDER = rule(
+    FEEDER_HEADER.interpretation(NonTerm.name),
+    COLON.optional(),
+    EOL, 
     FEATURE_LIST
 ).interpretation(NonTerm)

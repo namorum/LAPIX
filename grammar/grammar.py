@@ -1,6 +1,8 @@
 from yargy import rule, or_, forward
 from .basic_rules import EOL
-from .gram_utils import recursive_interpreted_rule
+from .gram_utils import recursive_interpreted_rule, sep_rule
+
+from .facts import NonTerm
 
 from .s1_info.info_section import INFO_SECTION
 from .s2_condition.condition_section import CONDITION_SECTION
@@ -13,22 +15,14 @@ from .s8_cool.cool_section import COOL_SECTION
 from .s9_result.result_section import RESULT_SECTION
 
 
-SECTION = or_(
-    INFO_SECTION,
-    CONDITION_SECTION,
-    TASK_SECTION,
-    EQUIPMENT_SECTION,
-    PREPARE_SECTION,
-    GAS_SECTION,
-    PARAMS_SECTION,
-    PARAMS_SECTION,
-    COOL_SECTION,
-    RESULT_SECTION
-)
-
-DOCUMENT = forward()
-DOCUMENT.define(
-    recursive_interpreted_rule(
-        SECTION, None, EOL, 9
-    )
-)
+DOCUMENT = sep_rule(
+#    INFO_SECTION,
+#    CONDITION_SECTION.interpretation(NonTerm.successors),
+#    TASK_SECTION.interpretation(NonTerm.successors),
+    EQUIPMENT_SECTION.interpretation(NonTerm.successors),
+    PREPARE_SECTION.interpretation(NonTerm.successors),
+    GAS_SECTION.interpretation(NonTerm.successors),
+    PARAMS_SECTION.interpretation(NonTerm.successors),
+    COOL_SECTION.interpretation(NonTerm.successors),
+    RESULT_SECTION.interpretation(NonTerm.successors)
+).interpretation(NonTerm)

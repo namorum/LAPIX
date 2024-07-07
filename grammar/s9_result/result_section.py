@@ -9,7 +9,6 @@ from ..pipelines import RESULT_HEADER
 from .result_desc import RESULT_DESC
 
 
-
 RESULT_SECTION = sep_rule(
     RESULT_HEADER.interpretation(NonTerm.name), 
     TEXT_FEATURE.interpretation(NonTerm.successors), 

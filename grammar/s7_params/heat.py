@@ -11,5 +11,5 @@ from ..facts import NonTerm
 
 HEAT = sep_rule(
     HEAT_HEADER.interpretation(NonTerm.name), 
-    FEATURE_LIST
+    FEATURE.interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

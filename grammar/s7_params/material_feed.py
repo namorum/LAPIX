@@ -13,13 +13,12 @@ from ..pipelines import (
 
 
 MATERIAL_INFO = sep_rule(
-    ELEMENTS,
-    GRANULOMETRY,
-    FEATURE_LIST
+    ELEMENTS.interpretation(NonTerm.successors),
+    GRANULOMETRY.interpretation(NonTerm.successors)
 )
 
-POWDER_FEED_INFO = sep_rule(
-    FEATURE, FEATURE
+POWDER_FEED_INFO = rule(
+    FEATURE.interpretation(NonTerm.successors).repeatable()
 )
 
 POWDER_FEED = rule(
@@ -27,9 +26,9 @@ POWDER_FEED = rule(
     COLON, EOL.optional(), 
     TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors), 
     EOL,
-    MATERIAL_INFO.optional().interpretation(NonTerm.successors), 
-    EOL.optional(),
-    POWDER_FEED_INFO.interpretation(NonTerm.successors)
+#    MATERIAL_INFO.optional(),      - это место вызывало RecursionError
+#    EOL.optional(),                - и это
+    POWDER_FEED_INFO
 ).interpretation(NonTerm)
 
 ENUM_POWDER = rule(
@@ -74,7 +73,7 @@ MATERIAL_FEED = sep_rule(
     MATERIAL_FEED_HEADER.interpretation(NonTerm.name),
     or_(
         POWDER_FEED,
-        POWDER_MIX_FEED,
-        WIRE_FEED
+#        POWDER_MIX_FEED,
+#        WIRE_FEED
     ).interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

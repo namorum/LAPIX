@@ -1,4 +1,4 @@
-from yargy import rule, or_, and_, forward
+from yargy import rule, or_
 from yargy.predicates import eq as eq_, type as type_, in_, gte, lte
 
 from ..gram_utils import recursive_interpreted_rule, sep_rule
@@ -26,9 +26,13 @@ NON_CONTINUAL_MODE = sep_rule(
     FEATURE_LIST
 ).interpretation(NonTerm)
 
-MODE = sep_rule(
+MODE = rule(
     MODE_HEADER.interpretation(NonTerm.name), 
-    or_(CONTINUAL_MODE, NON_CONTINUAL_MODE).interpretation(NonTerm.successors)
+    COLON, EOL.optional(),
+    or_(
+        CONTINUAL_MODE, 
+#        NON_CONTINUAL_MODE
+    ).interpretation(NonTerm.successors)
 ).interpretation(NonTerm)
 
 T_POWER_FEATURE = rule(
@@ -87,14 +91,14 @@ TIMED_LAYERED_POWER = rule(
 
 POWER = or_(
     CONSTANT_POWER, 
-    TIMED_POWER, 
-    LAYERED_POWER, 
-    TIMED_LAYERED_POWER
+#    TIMED_POWER, 
+#    LAYERED_POWER, 
+#    TIMED_LAYERED_POWER
 )
 
 LASER = sep_rule(
     LASER_HEADER.interpretation(NonTerm.name), 
     MODE.interpretation(NonTerm.successors), 
     POWER.interpretation(NonTerm.successors), 
-    FEATURE_LIST
+    FEATURE.interpretation(NonTerm.successors).repeatable()
 ).interpretation(NonTerm)

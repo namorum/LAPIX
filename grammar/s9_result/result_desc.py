@@ -7,7 +7,9 @@ from ..pipelines import (
     RESULT_GEOMETRY_HEADER,
     RESULT_ELEMENTS_HEADER,
     RESULT_MICROSTRUCTURE_HEADER,
-    RESULT_DEFECTS_HEADER
+    RESULT_DEFECTS_HEADER,
+    DESC_HEADER,
+    EVAL_HEADER
 )
 from ..basic_rules import *
 from ..facts import NonTerm, TermString
@@ -38,21 +40,40 @@ RESULT_DEFECT_LIST = recursive_interpreted_rule(
 RESULT_GEOMETRY = rule(
     RESULT_GEOMETRY_HEADER.interpretation(NonTerm.name), 
     EOL, 
-    WORDS.interpretation(NonTerm.successors), 
+    TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors), 
     EOL.optional(),
     FEATURE.optional().interpretation(NonTerm.successors)
 ).interpretation(NonTerm)
 
 RESULT_ELEMENTS = sep_rule(
     RESULT_ELEMENTS_HEADER.interpretation(NonTerm.name),
-    TEXT_FEATURE.interpretation(NonTerm.successors),
-    TEXT_FEATURE.interpretation(NonTerm.successors)
+    rule(
+        DESC_HEADER.interpretation(NonTerm.name), 
+        COLON.optional(), EOL,
+        or_(
+#            CUSTOM_FEATURE.interpretation(NonTerm.successors).repeatable(),        - здесь возникает RecursionError
+            TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+        )
+    ).interpretation(NonTerm).interpretation(NonTerm.successors),
+    rule(
+        EVAL_HEADER.interpretation(NonTerm.name), 
+        COLON.optional(), EOL,
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+    ).interpretation(NonTerm).interpretation(NonTerm.successors)
 ).interpretation(NonTerm)
 
 RESULT_MICROSTRUCTURE = sep_rule(
     RESULT_MICROSTRUCTURE_HEADER.interpretation(NonTerm.name),
-    TEXT_FEATURE.interpretation(NonTerm.successors),
-    TEXT_FEATURE.interpretation(NonTerm.successors)
+    rule(
+        DESC_HEADER.interpretation(NonTerm.name), 
+        COLON.optional(), EOL,
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+    ).interpretation(NonTerm).interpretation(NonTerm.successors),
+    rule(
+        EVAL_HEADER.interpretation(NonTerm.name), 
+        COLON.optional(), EOL,
+        TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors)
+    ).interpretation(NonTerm).interpretation(NonTerm.successors)
 ).interpretation(NonTerm)
 
 RESULT_DEFECTS = sep_rule(
@@ -69,6 +90,6 @@ RESULT_DESC = sep_rule(
     RESULT_ELEMENTS.interpretation(NonTerm.successors),
     RESULT_MICROSTRUCTURE.interpretation(NonTerm.successors),
     RESULT_DEFECTS.interpretation(NonTerm.successors),
-    TEXT_FEATURE.interpretation(NonTerm.successors),
-    TEXT_FEATURE.interpretation(NonTerm.successors)
+    TEXT_FEATURE.optional().interpretation(NonTerm.successors),
+    TEXT_FEATURE.optional().interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

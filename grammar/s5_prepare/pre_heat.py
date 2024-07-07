@@ -8,5 +8,6 @@ from ..facts import NonTerm
 
 PRE_HEAT = sep_rule(
     PRE_HEAT_HEADER.interpretation(NonTerm.name), 
-    FEATURE_LIST
+    FEATURE.interpretation(NonTerm.successors),
+    FEATURE.interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

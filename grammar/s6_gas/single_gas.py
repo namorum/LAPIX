@@ -6,7 +6,10 @@ from ..pipelines import SINGLE_GAS_HEADER
 from ..facts import NonTerm
 
 
-SINGLE_GAS = sep_rule(
+SINGLE_GAS = rule(
     SINGLE_GAS_HEADER.interpretation(NonTerm.name), 
+    COLON,
+    TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
+    EOL,
     FEATURE_LIST
 ).interpretation(NonTerm)

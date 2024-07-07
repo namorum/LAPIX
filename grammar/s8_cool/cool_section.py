@@ -5,7 +5,7 @@ from ..gram_utils import sep_rule
 from ..facts import NonTerm
 
 from ..pipelines import COOL_HEADER
-from ..basic_rules import FEATURE_LIST
+from ..basic_rules import FEATURE_LIST, FEATURE
 
 
 COOL_SECTION = sep_rule(

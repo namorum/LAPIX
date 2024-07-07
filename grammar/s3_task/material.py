@@ -12,20 +12,14 @@ from ..basic_rules import *
 from ..facts import NonTerm, TermString
 
 
-MATERIAL_INFO = or_(
-    rule(
-        NUMBER.optional(), PUNCT.optional(), TEXT.interpretation(NonTerm.name), EOL,
+MATERIAL_INFO = rule(
+        NUMBER, PUNCT, TEXT.interpretation(NonTerm.name), EOL,
         ELEMENTS.optional().interpretation(NonTerm.successors), 
         EOL.optional(),
-        GRANULOMETRY.optional().interpretation(NonTerm.successors), 
+        GEOMETRY.optional().interpretation(NonTerm.successors),
         EOL.optional(),
-        FEATURE_LIST.interpretation(NonTerm.successors)
-    ).interpretation(NonTerm),
-    rule(
-        NUMBER.optional(), PUNCT.optional(),
-        TEXT.interpretation(TermString.value)
-    ).interpretation(TermString)
-)
+        FEATURE_LIST.optional()
+).interpretation(NonTerm)
 
 MATERIAL_INFO_LIST = recursive_interpreted_rule(
     MATERIAL_INFO, NonTerm.successors, EOL, 5
@@ -45,5 +39,8 @@ WIRE = sep_rule(
 
 MATERIAL = sep_rule(
     MATERIAL_HEADER.interpretation(NonTerm.name), 
-    or_(POWDER, WIRE).interpretation(NonTerm.successors)
+    or_(
+        POWDER, 
+#        WIRE
+    ).interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

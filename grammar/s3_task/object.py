@@ -11,12 +11,17 @@ from ..basic_rules import *
 from ..facts import NonTerm
 
 
-DETAIL = sep_rule(
+DETAIL = rule(
     DETAIL_HEADER.interpretation(NonTerm.name), 
     COLON, 
-    TEXT.interpretation(NonTerm.successors), 
-    FEATURE_LIST, 
-    GEOMETRY.interpretation(NonTerm.successors), 
+    TEXT.interpretation(TermString.value).interpretation(TermString).interpretation(NonTerm.successors),
+    EOL, 
+    FEATURE.interpretation(NonTerm.successors),
+    EOL,
+    FEATURE.interpretation(NonTerm.successors),
+    EOL,
+    GEOMETRY.interpretation(NonTerm.successors),
+    EOL, 
     FEATURE.interpretation(NonTerm.successors)
 ).interpretation(NonTerm)
 
@@ -29,5 +34,8 @@ SUBSTRATE = sep_rule(
 
 OBJECT = sep_rule(
     OBJECT_HEADER.interpretation(NonTerm.name), 
-    or_(DETAIL, SUBSTRATE).interpretation(NonTerm.successors)
+    or_(
+        DETAIL, 
+#        SUBSTRATE
+    ).interpretation(NonTerm.successors)
 ).interpretation(NonTerm)

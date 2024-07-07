@@ -1,26 +1,43 @@
-from utils import get_docx_text, print_tree
-from tokenizer import tokenizer
-from parse import parse
+from tkinter import *
+from tkinter import ttk
+from tkinter import filedialog
 
-from grammar.s1_info.info_section import INFO_SECTION
-from grammar.s2_condition.condition_section import CONDITION_SECTION
-from grammar.s3_task.task_section import TASK_SECTION
-from grammar.s4_equipment.equipment_section import EQUIPMENT_SECTION
-from grammar.s5_prepare.prepare_section import PREPARE_SECTION
-from grammar.s6_gas.gas_section import GAS_SECTION
-from grammar.s7_params.params_section import PARAMS_SECTION
-from grammar.s8_cool.cool_section import COOL_SECTION
-from grammar.s9_result.result_section import RESULT_SECTION
-
-from grammar.basic_rules import FEATURE, TEXT, DATE_FEATURE
+from parse import parse_document
+from generate_json import generate_json
 
 
-#parse("grammar//tests//INFO.docx", INFO_SECTION, True)
-#parse("grammar//tests//CONDITION.docx", CONDITION_SECTION, True)
-parse("grammar//tests//TASK.docx", TASK_SECTION, True)
-#parse("grammar//tests//EQUIPMENT.docx", EQUIPMENT_SECTION, True)
-#parse("grammar//tests//PREPARE.docx", PREPARE_SECTION, True)
-#parse("grammar//tests//GAS.docx", GAS_SECTION, True)
-#parse("grammar//tests//PARAMS.docx", PARAMS_SECTION, True)
-#parse("grammar//tests//COOL.docx", COOL_SECTION, True)
-#parse("grammar//tests//RESULT.docx", RESULT_SECTION, True)
+class App(ttk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.pack()
+
+
+def browseFiles():
+    file_name = filedialog.askopenfilename(initialdir = "/",
+                                          title = "Выберите файл:",
+                                          filetypes = (("Все документы",
+                                                        "*.txt* *.docx*"),
+                                                        ("Документы WORD",
+                                                        "*.docx*"),
+                                                        ("Документы TXT",
+                                                        "*.txt*")
+                                                        ))
+    if file_name != '':
+        file_name_entry.delete(0, END)
+        file_name_entry.insert(0, file_name)
+
+
+myapp = App()
+
+myapp.master.title("LAPIX")
+myapp.master.geometry("700x100")
+
+ttk.Label(myapp, text="Выберите файл:").grid(column=0, row=0, columnspan=8, sticky='nsew')
+file_name_entry = ttk.Entry(myapp)
+file_name_entry.grid(column=0, row=1, columnspan=7, sticky='nsew')
+ttk.Button(myapp, text="Обзор...", command=browseFiles).grid(column=7, row=1, sticky='nsew')
+ttk.Button(myapp, width=110, text="Извлечь", command=myapp.destroy).grid(column=0, row=2, columnspan=8, sticky='nsew')
+
+myapp.mainloop()
+
+generate_json(parse_document('file.docx'))
