@@ -8,7 +8,7 @@ from os.path import exists
 from parse import parse_document
 from generate_json import generate_json
 
-
+'''
 def get_json_and_announce(file_name, save_dir):
     if file_name == '':
         return showwarning('Внимание!', 'Выберите файл протокола!')
@@ -73,3 +73,6 @@ ttk.Label(myapp).grid(column=0, row=4)
 ttk.Button(myapp, width=110, text="Извлечь", command=lambda: get_json_and_announce(file_name_label['text'], save_dir_label['text'])).grid(column=0, row=5, columnspan=8, sticky='nsew')
 
 myapp.mainloop()
+'''
+
+generate_json(parse_document('file.docx'), '.')

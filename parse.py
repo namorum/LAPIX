@@ -43,6 +43,18 @@ def print_tree(tree, indent=0):
         print(f'{'\t'*indent*2}{tree.valtype}', end='\n\n')
 
 
+def print_json_tree(tree, indent=0):
+    if tree['type'] == 'НЕТЕРМИНАЛ':
+        print(f"{'\t'*indent*2}{tree['name']}")
+        print(f"{'\t'*indent*2}{tree['type']}", end='\n\n')
+        for successor in tree['successors']:
+            print_json_tree(successor, indent+1)
+    else:
+        print(f"{'\t'*indent*2}{tree['value']}")
+        print(f"{'\t'*indent*2}{tree['type']}")
+        print(f"{'\t'*indent*2}{tree['valtype']}", end='\n\n')
+
+
 def __tree_to_json_like(tree, json_like):
     if tree.type == 'НЕТЕРМИНАЛ':
         json_like['name'] = tree.name
@@ -66,9 +78,11 @@ def parse_rule(file_path, rule):
     parser = Parser(rule, tokenizer=tokenizer)
     input = get_docx_text(file_path)
     
+    tree = parser.find(input).fact
+
     json_like = {}
-    __tree_to_json_like(parser.find(input).fact, json_like)
-    del parser
+    __tree_to_json_like(tree, json_like)
+    
 
     return json_like
 
@@ -89,4 +103,5 @@ def parse_document(file_path):
         ]:
         document_tree['successors'].append({})
         document_tree['successors'][-1] = parse_rule(file_path, rule)
+    print_json_tree(document_tree)
     return document_tree
