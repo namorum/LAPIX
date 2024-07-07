@@ -1,4 +1,5 @@
 import json
+from os.path import join
 
 json_header = {
     "title" : "Архив протоколов технологических операций лазерной обработки",
@@ -40,7 +41,12 @@ def __tree_to_json(tree):
     return output
 
 
-def generate_json(tree):
+def generate_json(tree, save_dir):
+    if tree is None:
+        return None
     json_output = __tree_to_json(tree)
-    with open(f'{tree['successors'][0]['value']}.universal.json', 'w', encoding='utf-8-sig') as file:
+    json_name = f'{tree['successors'][0]['value']}.universal.json'
+    with open(join(save_dir, json_name), 'w', encoding='utf-8-sig') as file:
         file.write(json_output)
+    return json_name
+    

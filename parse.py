@@ -62,7 +62,7 @@ def __tree_to_json_like(tree, json_like):
         json_like['valtype'] = tree.valtype
 
 
-def parse_rule(file_path='file.docx', rule=DOCUMENT):
+def parse_rule(file_path, rule):
     parser = Parser(rule, tokenizer=tokenizer)
     input = get_docx_text(file_path)
     
@@ -75,19 +75,18 @@ def parse_rule(file_path='file.docx', rule=DOCUMENT):
 
 def parse_document(file_path):
     document_tree = parse_rule(file_path, INFO_SECTION)
-    if document_tree != {}:
-        for rule in [
-            CONDITION_SECTION, 
-            TASK_SECTION, 
-            EQUIPMENT_SECTION, 
-            PREPARE_SECTION, 
-            GAS_SECTION, 
-            PARAMS_SECTION, 
-            COOL_SECTION, 
-            RESULT_SECTION
-            ]:
-            document_tree['successors'].append({})
-            document_tree['successors'][-1] = parse_rule(file_path, rule)
-        return document_tree
-    else:
+    if document_tree == {}:
         return None
+    for rule in [
+        CONDITION_SECTION, 
+        TASK_SECTION, 
+        EQUIPMENT_SECTION, 
+        PREPARE_SECTION, 
+        GAS_SECTION, 
+        PARAMS_SECTION, 
+        COOL_SECTION, 
+        RESULT_SECTION
+        ]:
+        document_tree['successors'].append({})
+        document_tree['successors'][-1] = parse_rule(file_path, rule)
+    return document_tree
